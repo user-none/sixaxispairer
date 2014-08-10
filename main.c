@@ -56,7 +56,7 @@ static int mac_to_bytes(const char *in, size_t in_len, unsigned char *out, size_
 
     memset(out, 0, out_len);
     p = in;
-    while (p < in+in_len && i < out_len) {
+    while (p+1 < in+in_len && i < out_len) {
         if (*p == ':') {
             p++;
             continue;
