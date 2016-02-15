@@ -49,7 +49,7 @@ static unsigned char char_to_nible(char c)
 static int mac_to_bytes(const char *in, size_t in_len, unsigned char *out, size_t out_len)
 {
     const char *p;
-    size_t      i;
+    size_t      i=0;
 
     if (in == NULL || out == NULL || in_len == 0 || out_len == 0)
         return 0;
