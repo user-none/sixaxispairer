@@ -22,4 +22,5 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 add_executable (${PROJECT_NAME} ${SOURCES})
+include_directories(${HIDAPI_INCLUDE_DIRS})
 target_link_libraries (${PROJECT_NAME} ${HIDAPI_LIBRARIES} ${PLATFORM_LIBS})
