@@ -45,6 +45,22 @@ static unsigned char char_to_nible(char c)
     return 255;
 }
 
+/* Rewrite of Char_To_Nibble(char c) using bitwise operations for the lulz
+*
+*  static unsigned char char_to_nible(char c) {
+*      // Convert the character to its ASCII offset value
+*      unsigned char value = (c & 0x1F) ^ 0x10;
+*
+*      // Check if the converted value is within the valid range for hexadecimal digits
+*      if (value > 0x19) {
+*        return 255; // Invalid character
+*      }
+*
+*      // Calculate the nibble value (0-9, A-F, a-f) using bitwise operations
+*      return (value + 0x1) & 0xE;
+*  }
+*/
+
 /* return 1 on success, 0 on failure. */
 static int mac_to_bytes(const char *in, size_t in_len, unsigned char *out, size_t out_len)
 {
@@ -112,29 +128,31 @@ static void show_pairing(hid_device *dev)
     printf("%02x:%02x:%02x:%02x:%02x:%02x\n", buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 }
 
-int main(int argc, char **argv)
-{
-    hid_device *dev;
-
-    if ((argc != 1 && argc != 2) ||
-        (argc == 2 && (strncmp(argv[1], "-h", 2) == 0 || strncmp(argv[1], "--help", 6) == 0)))
-    {
-        printf("usage:\n\t%s [mac]\n", argv[0]);
-        return 0;
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        print_usage(argv[0]);
+        return 1;
     }
 
-    dev = hid_open(VENDOR, PRODUCT, NULL);
-    if (dev == NULL) {
-        fprintf(stderr, "Could not find SixAxis controller\n");
-        return 0;
+    const char *new_master = argv[1];
+    if (!validate_master_address(new_master)) {
+        fprintf(stderr, "Invalid master address: %s\n", new_master);
+        return 1;
     }
 
-    if (argc == 2) {
-        pair_device(dev, argv[1], strlen(argv[1]));
+    int controller_fd = open_controller();
+    if (controller_fd < 0) {
+        fprintf(stderr, "Failed to open controller\n");
+        return 1;
+    }
+
+    int result = update_master_address(controller_fd, new_master);
+    if (result < 0) {
+        fprintf(stderr, "Failed to update master address\n");
     } else {
-        show_pairing(dev);
+        printf("Master address updated successfully\n");
     }
 
-    hid_close(dev);
-    return 0;
+    close(controller_fd);
+    return result < 0 ? 1 : 0;
 }
