@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 
 #define VENDOR        0x054c
 #define PRODUCT       0x0268
