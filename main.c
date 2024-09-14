@@ -25,14 +25,17 @@
 
 #include <hidapi.h>
 
-#define VENDOR        0x054c
-#define PRODUCT       0x0268
+static const unsigned short VENDOR    = 0x054c;
+static const unsigned short PRODUCT[] = {
+    0x0268, /* sixaxis */
+    0x042f  /* move motion */
+};
 /* 0xf5   == (0x03f5 & ~(3 << 8))
  * 0x03f5 == (0xf5 | (3 << 8))
  * HIDAPI will automatically add (3 << 8 to the report id.
  * Other tools for setting the report id use hid libraries which
  * don't automatically do this. */
-#define MAC_REPORT_ID 0xf5
+static const unsigned char MAC_REPORT_ID = 0xf5;
 
 static unsigned char char_to_nible(char c)
 {
@@ -123,7 +126,12 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    dev = hid_open(VENDOR, PRODUCT, NULL);
+    for (size_t i = 0; i < sizeof(PRODUCT) / sizeof(*PRODUCT); i++) {
+        dev = hid_open(VENDOR, PRODUCT[i], NULL);
+        if (dev != NULL) {
+            break;
+        }
+    }
     if (dev == NULL) {
         fprintf(stderr, "Could not find SixAxis controller\n");
         return 0;
