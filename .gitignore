@@ -1,0 +1,5 @@
+build/
+nbproject/
+
+.DS_Store
+*.swp
