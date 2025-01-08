@@ -6,7 +6,7 @@ a sixaxis controller is currently paired with.
 
 # Dependencies
 
-HID API (http://www.signal11.us/oss/hidapi/)
+HID API (https://github.com/libusb/hidapi)
 
 
 # Supported Platforms
